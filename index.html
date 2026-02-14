@@ -159,7 +159,8 @@
         <option value="distance">Время до школы</option>
       </select>
     </label>
-    <button id="refreshBtn" class="refresh-btn">🔄 Запустить обновление</button>
+    <button id="refreshBtn" class="refresh-btn">🔄 Запросить обновление</button>
+      <p style="grid-column: 1 / -1; font-size: 0.85rem; color: var(--muted); margin: 0;">Кнопка открывает Telegram-бота KFamilyHome: нажми «Start», чтобы я мгновенно перезапустил мониторинг и обновил страницу.</p>
   </section>
 
   <section id="listings"></section>
@@ -170,18 +171,20 @@
     const refreshBtn = document.getElementById('refreshBtn');
     refreshBtn.addEventListener('click', () => {
       refreshBtn.disabled = true;
-      refreshBtn.textContent = '⚙️ Обновление запускается...';
-      fetch('https://t.me/KFamilyHome_bot?start=refresh')
-        .catch(() => {})
-        .finally(() => {
-          setTimeout(() => {
-            refreshBtn.disabled = false;
-            refreshBtn.textContent = '🔄 Запустить обновление';
-          }, 2000);
-          alert('Запрос обновления отправлен. Я отпишусь в Telegram, когда проверю новые объявления.');
-        });
+      refreshBtn.textContent = '⚙️ Открываю Telegram...';
+      const tgUrl = 'https://t.me/KFamilyHome_bot?start=refresh';
+      try {
+        window.open(tgUrl, '_blank', 'noopener');
+      } catch (err) {
+        console.warn('Не удалось автоматически открыть Telegram', err);
+      }
+      setTimeout(() => {
+        refreshBtn.disabled = false;
+        refreshBtn.textContent = '🔄 Запросить обновление';
+      }, 2000);
+      alert('Нажми «Start» в открывшемся Telegram, чтобы я сразу перезапустил поиск.');
     });
-  <script>
+  </script>
     const listings = [
       {
         name: 'Neva Towers, башня 2 — 108,4 м²',
