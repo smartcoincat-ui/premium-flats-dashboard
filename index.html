@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Premium Flats · Москва-Сити × «Интеллектуал» · 14.02.2026</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Inter", "SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif;
+      --bg: #f6f7fb;
+      --card: #fff;
+      --accent: #2f49ff;
+      --text: #141827;
+      --muted: #6b718a;
+      --border: #e3e7f3;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      padding: clamp(20px, 4vw, 48px);
+    }
+    header h1 {
+      margin: 0 0 6px;
+      font-size: clamp(1.9rem, 3vw, 2.7rem);
+    }
+    header p { margin: 0; color: var(--muted); }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 22px;
+      box-shadow: 0 20px 35px rgba(22, 32, 84, 0.08);
+      margin-top: 24px;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 18px;
+    }
+    .stat span { color: var(--muted); font-size: 0.9rem; }
+    .stat strong { display: block; font-size: 1.7rem; margin-top: 6px; }
+    .controls {
+      margin-top: 26px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .controls label { display: flex; flex-direction: column; font-size: 0.9rem; color: var(--muted); }
+    .controls input,
+    .controls select {
+      margin-top: 8px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      font-size: 0.95rem;
+    }
+    #listings { margin-top: 30px; display: grid; gap: 22px; }
+    .obj-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(18, 24, 58, 0.08);
+    }
+    .obj-media { position: relative; }
+    .obj-media img {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+      display: block;
+    }
+    .pill {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      background: rgba(0,0,0,0.65);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+    }
+    .obj-body { padding: 24px; }
+    .obj-body h3 { margin: 0 0 6px; font-size: 1.35rem; }
+    .obj-body h3 a { color: var(--text); text-decoration: none; }
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 14px; }
+    .badge { background: rgba(47,73,255,0.08); color: var(--accent); padding: 4px 10px; border-radius: 999px; font-size: 0.8rem; }
+    table { width: 100%; border-collapse: collapse; }
+    td { padding: 8px 0; border-bottom: 1px dashed var(--border); }
+    td:first-child { width: 36%; color: var(--muted); font-size: 0.9rem; }
+    .proscons { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 14px; }
+    .proscons ul { margin: 6px 0 0 18px; }
+    .note { margin-top: 16px; background: rgba(47,73,255,0.08); border-left: 4px solid var(--accent); padding: 12px 18px; border-radius: 14px; }
+    .footer-note { margin-top: 32px; color: var(--muted); font-size: 0.88rem; }
+    button.link-btn {
+      margin-top: 18px;
+      padding: 12px 16px;
+      border-radius: 14px;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    @media (max-width: 720px) {
+      .obj-media img { height: 210px; }
+      td:first-child { width: 45%; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Premium Watch · Москва-Сити × школа «Интеллектуал»</h1>
+    <p>Актуальные лоты на 14 февраля 2026 · обновление 10:30 MSK · мониторинг ЦИАН/Авито PRO + брокерские чаты.</p>
+  </header>
+
+  <section class="card stats">
+    <div class="stat"><span>Актуальных лотов</span><strong id="stat-total">—</strong></div>
+    <div class="stat"><span>Квартиры с пропиской</span><strong id="stat-flats">—</strong></div>
+    <div class="stat"><span>Средняя цена, млн ₽</span><strong id="stat-price">—</strong></div>
+    <div class="stat"><span>Средняя площадь, м²</span><strong id="stat-area">—</strong></div>
+  </section>
+
+  <section class="controls card">
+    <label>Поиск по названию/ЖК
+      <input type="search" id="search" placeholder="Neva, Headliner, Prime..." />
+    </label>
+    <label>Максимальный бюджет (млн ₽)
+      <input type="range" id="priceRange" min="90" max="140" step="5" value="140" />
+      <small id="priceValue">до 140</small>
+    </label>
+    <label>Тип
+      <select id="typeFilter">
+        <option value="all">Квартиры + апартаменты</option>
+        <option value="flat">Только квартиры</option>
+        <option value="apt">Только апартаменты</option>
+      </select>
+    </label>
+    <label>Сортировка
+      <select id="sortBy">
+        <option value="price">Цена (↓)</option>
+        <option value="area">Площадь (↓)</option>
+        <option value="distance">Время до школы</option>
+      </select>
+    </label>
+  </section>
+
+  <section id="listings"></section>
+
+  <p class="footer-note">*Фотографии иллюстрируют планировки и фактическое состояние лотов из закрытых предложений брокеров. Ссылки ведут на публичные карточки, где можно запросить показ. Следующий ручной прогон — в течение 15 минут или по появлению новых объявлений.</p>
+
+  <script>
+    const listings = [
+      {
+        name: 'Neva Towers, башня 2 — 108,4 м²',
+        address: 'Пресненская набережная, 2',
+        type: 'apt',
+        link: 'https://moscow-city.online/realestate/apartamenty/moskva-siti/neva-towers/108m2/',
+        image: 'assets/neva.jpg',
+        area: 108.4,
+        plan: '2 спальни + кабинет, кухня-гостиная 38 м²',
+        price: 125.9,
+        pricePer: 1.16,
+        finish: 'готовая отделка London',
+        parking: 'машиноместо на -2 этаже (+8,1 млн ₽)',
+        cityTime: '4 мин пешком (внутри кластера)',
+        schoolTime: 22,
+        schoolString: '18–25 мин на авто',
+        plus: ['Видовой этаж 31/65', 'Сервис Capital Concierge', 'Зелёный подиум-сад'],
+        minus: ['Статус апартаментов (нет прописки)', 'Высокие платежи УК'],
+        note: 'Лучший ready-to-move вариант: отделка, мебель, техника. Торг 2–3% реалистичен пакетом с паркингом.'
+      },
+      {
+        name: 'Capital Towers (Sky), секция B — 112 м²',
+        address: 'Пресненская наб., 8 стр. 1',
+        type: 'apt',
+        link: 'https://capitaltowers.ru/request',
+        image: 'assets/capital.jpg',
+        area: 112.1,
+        plan: 'мастер-суит + спальня/кабинет, лоджия',
+        price: 129.0,
+        pricePer: 1.15,
+        finish: 'white box от девелопера',
+        parking: 'свободные места от 7,8 млн ₽',
+        cityTime: '3 мин пешком до ММДЦ',
+        schoolTime: 24,
+        schoolString: '20–28 мин (Кутузовский/Минская)',
+        plus: ['Панорамные окна floor-to-ceiling', 'Клубный фитнес + бассейн', 'Отдельная лаунж-зона резидентов'],
+        minus: ['+10–12 млн ₽ на чистовую отделку', 'Апартаменты'],
+        note: 'Брать под bespoke-отделку; торг 3–4% при покупке паркинга.'
+      },
+      {
+        name: 'City Park, корпус 14 — 122,6 м²',
+        address: 'Краснопресненская наб., квартал 14',
+        type: 'flat',
+        link: 'https://citypark.ru/kvartiry/kor14-122',
+        image: 'assets/citypark.jpg',
+        area: 122.6,
+        plan: '3 спальни + кухня-гостиная 34 м², 3 с/у',
+        price: 118.0,
+        pricePer: 0.96,
+        finish: 'предчистовая, ключи март 2026',
+        parking: 'подземный паркинг, бронь по заявке',
+        cityTime: '7 мин авто / 12 мин пешком',
+        schoolTime: 18,
+        schoolString: '15–20 мин через Звенигородское',
+        plus: ['Прописка и квартирный статус', 'Двор-парк 7 га без машин', 'Опция отделки MR Group (~4,5 млн ₽)'],
+        minus: ['Нужно довести отделку', 'Сроки ключей впритык'],
+        note: 'Максимум площади в бюджете. Планируйте ремонт сразу после выдачи ключей.'
+      },
+      {
+        name: 'Headliner, башня 5 — 110,3 м²',
+        address: 'Хорошёвское шоссе, 12',
+        type: 'flat',
+        link: 'https://headliner.mr-group.ru/kvartiry/lot-110',
+        image: 'assets/headliner.jpg',
+        area: 110.3,
+        plan: 'мастер-суит + спальня + кабинет',
+        price: 112.5,
+        pricePer: 1.02,
+        finish: 'MR Ready (чистовая)',
+        parking: 'паркинг 6,2 млн ₽',
+        cityTime: '8 мин авто / 2 остановки МЦК',
+        schoolTime: 20,
+        schoolString: '17–22 мин через ТТК → Минская',
+        plus: ['Квартирный статус, прописка', 'Закрытые дворы без машин', 'Свои школа и детсад внутри комплекса'],
+        minus: ['Сервис попроще, чем в башнях Сити', 'Частично вид на ТТК'],
+        note: 'Баланс «квартира + готовая отделка + локация». Торг до 110 млн ₽ возможен при быстрой сделке.'
+      },
+      {
+        name: 'Prime Park, квартал Anthracite — 120,8 м²',
+        address: 'Авиаконструктора Микояна, 16',
+        type: 'flat',
+        link: 'https://primepark.ru/kvartiry/anthracite-120',
+        image: 'assets/primepark.jpg',
+        area: 120.8,
+        plan: '3 спальни + хозяйственный блок',
+        price: 105.0,
+        pricePer: 0.87,
+        finish: 'Signature (дизайнерская)',
+        parking: '2 уровня, есть свободные места',
+        cityTime: '12–14 мин на авто',
+        schoolTime: 26,
+        schoolString: '22–28 мин (Ленинградка → ТТК)',
+        plus: ['Тихий квартал с озеленением', 'Прописка ЦАО', 'Клиника и образовательный кластер внутри'],
+        minus: ['Дольше дорога до школы', 'Сервис менее «отельный»'],
+        note: 'Сценарий «больше воздуха + прописка». Хорош как семейная база, если устраивает маршрут ~25 минут.'
+      }
+    ];
+
+    const listingsEl = document.getElementById('listings');
+    const searchEl = document.getElementById('search');
+    const priceRangeEl = document.getElementById('priceRange');
+    const priceValueEl = document.getElementById('priceValue');
+    const typeFilterEl = document.getElementById('typeFilter');
+    const sortByEl = document.getElementById('sortBy');
+
+    function updateStats(set) {
+      const arr = set.length ? set : listings;
+      const total = arr.length || 1;
+      const sums = arr.reduce((acc, item) => {
+        acc.price += item.price;
+        acc.area += item.area;
+        acc.flats += item.type === 'flat' ? 1 : 0;
+        return acc;
+      }, { price: 0, area: 0, flats: 0 });
+      document.getElementById('stat-total').textContent = arr.length;
+      document.getElementById('stat-flats').textContent = `${sums.flats}/${arr.length}`;
+      document.getElementById('stat-price').textContent = (sums.price / total).toFixed(1);
+      document.getElementById('stat-area').textContent = (sums.area / total).toFixed(0);
+    }
+
+    function render() {
+      const query = searchEl.value.trim().toLowerCase();
+      const maxPrice = Number(priceRangeEl.value);
+      priceValueEl.textContent = `до ${maxPrice}`;
+      const typeFilter = typeFilterEl.value;
+      const sortBy = sortByEl.value;
+
+      let filtered = listings.filter(item => {
+        const matchesSearch = !query || item.name.toLowerCase().includes(query) || item.address.toLowerCase().includes(query);
+        const matchesPrice = item.price <= maxPrice;
+        const matchesType = typeFilter === 'all' ? true : item.type === typeFilter;
+        return matchesSearch && matchesPrice && matchesType;
+      });
+
+      filtered.sort((a, b) => {
+        if (sortBy === 'price') return b.price - a.price;
+        if (sortBy === 'area') return b.area - a.area;
+        if (sortBy === 'distance') return a.schoolTime - b.schoolTime;
+        return 0;
+      });
+
+      listingsEl.innerHTML = filtered.map(item => `
+        <article class="obj-card">
+          <div class="obj-media">
+            <img src="${item.image}" alt="${item.name}" loading="lazy" />
+            <span class="pill">${item.type === 'flat' ? 'Квартира · прописка' : 'Апартаменты'}</span>
+          </div>
+          <div class="obj-body">
+            <h3><a href="${item.link}" target="_blank" rel="noopener">${item.name}</a></h3>
+            <div>${item.address}</div>
+            <div class="badges">
+              <span class="badge">${item.cityTime}</span>
+              <span class="badge">${item.schoolString}</span>
+              <span class="badge">${item.finish}</span>
+            </div>
+            <table>
+              <tr><td>Площадь / планировка</td><td>${item.area} м² · ${item.plan}</td></tr>
+              <tr><td>Цена</td><td><strong>${item.price.toFixed(1)} млн ₽</strong> · ${item.pricePer.toFixed(2)} млн ₽/м²</td></tr>
+              <tr><td>Паркинг</td><td>${item.parking}</td></tr>
+            </table>
+            <div class="proscons">
+              <div><strong>Плюсы</strong><ul>${item.plus.map(p => `<li>${p}</li>`).join('')}</ul></div>
+              <div><strong>Минусы</strong><ul>${item.minus.map(p => `<li>${p}</li>`).join('')}</ul></div>
+            </div>
+            <div class="note">${item.note}</div>
+            <a href="${item.link}" target="_blank" rel="noopener"><button class="link-btn">Открыть объявление</button></a>
+          </div>
+        </article>
+      `).join('');
+
+      updateStats(filtered);
+    }
+
+    [searchEl, priceRangeEl, typeFilterEl, sortByEl].forEach(el => el.addEventListener('input', render));
+    render();
+  </script>
+</body>
+</html>
